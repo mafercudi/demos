@@ -455,15 +455,15 @@
         <label class="f-label">Customer ID capturado (solo lectura)</label>
         <div id="cfgCustomer" class="f-input">Sin número capturado</div>
       </div>
-      <div class="payload-head"><h4>Payloads de integración</h4><button onclick="copyPayload()">Copiar JSON</button></div>
+      <div class="f-group"><label><input type="checkbox" id="cfgPortable" onchange="renderPayloadPreview()"> Enlace portable para catálogos personalizados (más largo)</label></div><div class="payload-head"><h4>Payloads de integración</h4><button onclick="copyPayload()">Copiar JSON</button></div>
       <p class="payload-note">HTTP POST · Content-Type: application/json · Authorization: token configurado</p>
       <div class="payload-tabs"><button id="tabAdded" onclick="selectPayload('addedToCart')">addedToCart</button><button id="tabPaid" onclick="selectPayload('pagado')">pagado</button><button id="tabLast" onclick="selectPayload('last')">Último evento</button></div>
-      <p class="payload-note">cart_url: enlace de recuperación con los productos y cantidades del carrito. No contiene credenciales.</p><p class="payload-note" id="payloadInfo"></p><pre class="payload-code" id="payloadCode"></pre>
+      <p class="payload-note">cart_url: enlace corto. Catálogo original: funciona en otros dispositivos. Catálogo o apariencia personalizada: recuperación en este navegador; activa enlace portable para otros dispositivos.</p><p class="payload-note" id="payloadInfo"></p><pre class="payload-code" id="payloadCode"></pre>
       <button class="modal-save" onclick="saveConfig()">Guardar configuración</button>
     </div>
   </div>
 
-<div class="modal-overlay" id="studioModal"><div class="modal studio"><div class="modal-head"><h4>Personalizar demo</h4><button onclick="closeStudio()">✕</button></div><p>Los cambios se aplican en esta sesión. El catálogo y la apariencia no se guardan al recargar.</p><h5>Identidad visual</h5><div class="studio-grid"><label>Nombre de tienda<input class="f-input" id="stName"></label><label>Logo (emoji o texto corto)<input class="f-input" id="stLogo" maxlength="8"></label><label>Título de portada<input class="f-input" id="stTitle"></label><label>Etiqueta de portada<input class="f-input" id="stLabel"></label><label>Color principal<input class="f-input" type="color" id="stColor"></label><label>Color secundario<input class="f-input" type="color" id="stAccent"></label></div><div class="studio-actions"><button onclick="applyTheme()">Aplicar apariencia</button><button onclick="resetTheme()">Restaurar apariencia</button></div><h5>Catálogo</h5><input type="file" id="catalogFile" accept=".json,application/json" onchange="readCatalog(this)"><div class="studio-actions"><a href="catalog-example.json" download>Descargar catálogo de ejemplo</a><button onclick="restoreCatalog()">Restaurar catálogo original</button><button onclick="exportCatalog()">Exportar catálogo activo</button></div><label>JSON del catálogo (array de productos)<textarea class="f-input" id="catalogJson" spellcheck="false"></textarea></label><div class="studio-actions"><button onclick="applyCatalog()">Validar y aplicar JSON</button></div><h5>Editar producto individual</h5><select class="f-input" id="productSelect" onchange="loadProduct()"></select><div class="studio-product" id="productFields"></div><div class="studio-actions"><button onclick="saveProduct()">Guardar producto</button><button onclick="newProduct()">Nuevo producto</button><button onclick="deleteProduct()">Eliminar producto</button></div><div id="studioStatus" class="studio-status" role="status"></div><button class="modal-save" onclick="closeStudio()">Volver a la tienda</button></div></div>
+<div class="modal-overlay" id="studioModal"><div class="modal studio"><div class="modal-head"><h4>Personalizar demo</h4><button onclick="closeStudio()">✕</button></div><p>Los cambios se aplican en esta sesión. El catálogo y la apariencia no se guardan al recargar.</p><h5>Identidad visual</h5><div class="studio-grid"><label>Nombre de tienda<input class="f-input" id="stName"></label><label>Logo (emoji o texto corto)<input class="f-input" id="stLogo" maxlength="8"></label><label>Título de portada<input class="f-input" id="stTitle"></label><label>Etiqueta de portada<input class="f-input" id="stLabel"></label><label>Color principal<input class="f-input" type="color" id="stColor"></label><label>Color secundario<input class="f-input" type="color" id="stAccent"></label></div><div class="studio-actions"><button onclick="applyTheme()">Aplicar apariencia</button><button onclick="resetTheme()">Restaurar apariencia</button></div><h5>Catálogo</h5><p>Incluye en cada producto el campo <code>img</code> con una URL HTTPS pública y directa a la imagen real, sin autenticación. Esta URL se enviará como <code>product_image_url</code> en los eventos.</p><input type="file" id="catalogFile" accept=".json,application/json" onchange="readCatalog(this)"><div class="studio-actions"><a href="catalog-example.json" download>Descargar catálogo de ejemplo</a><button onclick="restoreCatalog()">Restaurar catálogo original</button><button onclick="exportCatalog()">Exportar catálogo activo</button></div><label>JSON del catálogo (array de productos; img debe ser una URL pública directa de la imagen)<textarea class="f-input" id="catalogJson" spellcheck="false"></textarea></label><div class="studio-actions"><button onclick="applyCatalog()">Validar y aplicar JSON</button></div><h5>Editar producto individual</h5><select class="f-input" id="productSelect" onchange="loadProduct()"></select><div class="studio-product" id="productFields"></div><div class="studio-actions"><button onclick="saveProduct()">Guardar producto</button><button onclick="newProduct()">Nuevo producto</button><button onclick="deleteProduct()">Eliminar producto</button></div><div id="studioStatus" class="studio-status" role="status"></div><button class="modal-save" onclick="closeStudio()">Volver a la tienda</button></div></div>
   <script>
     const DEFAULT_PRODUCTS = [{"id": 1, "name": "Gerberas y Rosas en Jarrón Tornasol", "sku": "6035", "price": 659.0, "img": "https://dopigfbn8x2pb.cloudfront.net/6346/main/75ecba96330936a707153e346aa8888f42342312d55aade483244177e42bc1c2/1064x1064.webp", "category": "Flores", "tag": "Top regalo"}, {"id": 2, "name": "Clásico Amor con 12 Rosas Rojas", "sku": "001", "price": 699.0, "img": "https://dopigfbn8x2pb.cloudfront.net/3/main/67ad7459e5a860470609d4a85c2eb710e3726470dc7f3dc1ebf585084db13d45/1064x1064.webp", "category": "Rosas", "tag": "Clásico"}, {"id": 3, "name": "Ternura con 6 Rosas y Lilys", "sku": "2386", "price": 699.0, "img": "https://dopigfbn8x2pb.cloudfront.net/2910/main/8bb6cfdb1668302b308efcbd24fc31916687fab936bb43afe0bcbf6b154af792/1064x1064.webp", "category": "Flores", "tag": "Delicado"}, {"id": 4, "name": "Brownies Lupe Maurer", "sku": "18873", "price": 339.0, "img": "https://dopigfbn8x2pb.cloudfront.net/16752/main/ceefea7f70592cc4fa65d30640616992aba41fa6c8183bd113c14f46d6829714/1064x1064.webp", "category": "Gourmet", "tag": "Dulce"}, {"id": 5, "name": "Arreglo de Rosas y Lisianthus", "sku": "18604", "price": 949.0, "img": "https://dopigfbn8x2pb.cloudfront.net/16398/main/470cb0cc5a0fb73607341b2b80c9e31685c0c9b8725f2d7e4a42c2fd3ccee440/1064x1064.webp", "category": "Flores", "tag": "Premium"}, {"id": 6, "name": "Perfume CH para Dama 100ml", "sku": "10632-A", "price": 2649.0, "img": "https://dopigfbn8x2pb.cloudfront.net/10132/main/f960fe1a10a71ceecb5bc749183d9e4918c850f3b6b0d355793c673f923159a3/1064x1064.webp", "category": "Perfume", "tag": "Lujo"}, {"id": 7, "name": "Planta del Éxito en Maceta de Elefante", "sku": "5782", "price": 549.0, "img": "https://dopigfbn8x2pb.cloudfront.net/6110/main/37a617bcdba1acbe1d697d3b13c332ea6775402c8b1a8833974dc054a3ddb8ee/1064x1064.webp", "category": "Plantas", "tag": "Duradero"}, {"id": 8, "name": "Arreglo de 15 Girasoles", "sku": "3621", "price": 899.0, "img": "https://dopigfbn8x2pb.cloudfront.net/3920/main/f8611b05c82f449d6d9a0ece1827a48bf1c3eea23a96fee91976c822605a3010/1064x1064.webp", "category": "Girasoles", "tag": "Luminoso"}, {"id": 9, "name": "Personaliza Taza 15oz “Coolest Mom Ever”", "sku": "26348", "price": 259.0, "img": "https://dopigfbn8x2pb.cloudfront.net/24391/main/05a64cc3c7c1259d7e300e9326b06c2c6d8d496ea72273330edd1af2dba3fcef/1064x1064.webp", "category": "Personalizado", "tag": "Personalizable"}, {"id": 10, "name": "Globo “Felicidades Mamá”", "sku": "23506", "price": 150.0, "img": "https://dopigfbn8x2pb.cloudfront.net/21537/main/ebec8b38f4b30279535d2b2c9b61c9a05779a900b719535a0bff3119a0080106/1064x1064.webp", "category": "Globo", "tag": "Complemento"}, {"id": 11, "name": "Personaliza Taza 15oz “Solo Tú Inspiras”", "sku": "26347-P", "price": 259.0, "img": "https://dopigfbn8x2pb.cloudfront.net/24390/main/12a20630b66ed7787a1936bd51cc0f9c0da63a6c72c375e12b1a4b87c1e4dcf0/1064x1064.webp", "category": "Personalizado", "tag": "Personalizable"}, {"id": 12, "name": "Personaliza Marco Chico Blanco “Mariposas”", "sku": "26351", "price": 319.0, "img": "https://dopigfbn8x2pb.cloudfront.net/24394/main/3e85cf3e0728c970e417f927bbac49a0606504b4d0fc20a0eeba503a408ab343/1064x1064.webp", "category": "Personalizado", "tag": "Recuerdo"}, {"id": 13, "name": "Vino Personalizado Tinto “Happy Mother’s Day”", "sku": "26353-P", "price": 739.0, "img": "https://dopigfbn8x2pb.cloudfront.net/24396/main/0cc652b9d8c037fec873de21a65cfdafb8bab53f36badf28589bc67d4bcc5e0c/1064x1064.webp", "category": "Vino", "tag": "Especial"}];
     let PRODUCTS = DEFAULT_PRODUCTS.map(p => ({...p}));
@@ -548,7 +548,8 @@
         sku: product.sku,
         price: product.price,
         quantity: cart[id],
-        category: product.category
+        category: product.category,
+        product_image_url: product.img
       });
     }
 
@@ -589,7 +590,8 @@
           name: product.name,
           price: product.price,
           quantity: qty,
-          category: product.category
+          category: product.category,
+        product_image_url: product.img
         };
       });
       return { total, items };
@@ -691,17 +693,45 @@
     }
 
     let lastEvent = null, payloadTab = 'addedToCart';
-    function cartLink(snapshot = cart) {
+    const cartKeyPrefix = 'gs_cart_v6:';
+    function cartLink(snapshot = cart, preview = false) {
       const products = PRODUCTS.filter(p => snapshot[p.id] > 0).map(p => ({...p, quantity:snapshot[p.id]}));
-      const url = new URL(location.href);
-      url.search = '';
-      url.hash = 'cart=' + encodeURIComponent(JSON.stringify({v:1, products, theme}));
+      const url = new URL(location.href); url.search = '';
+      const data = {v:1, products, theme};
+      const isDefault = products.every(p => DEFAULT_PRODUCTS.some(d => fields.every(k => d[k] === p[k]))) && Object.keys(originalTheme).every(k => theme[k] === originalTheme[k]);
+      if (isDefault) {
+        url.hash = 'c=' + products.map(p => p.id.toString(36)+'.'+p.quantity.toString(36)).join('-');
+      } else if (!(preview ? $('cfgPortable').checked : config.portableCart)) {
+        if (preview) { url.hash = 'r=EJEMPLO'; return url.href; }
+        try {
+          const bytes = crypto.getRandomValues(new Uint8Array(9));
+          const id = Array.from(bytes, b => b.toString(16).padStart(2,'0')).join('');
+          localStorage.setItem(cartKeyPrefix+id, JSON.stringify(data));
+          url.hash = 'r='+id;
+        } catch (_) { url.hash = 'cart='+encodeURIComponent(JSON.stringify(data)); }
+      } else { url.hash = 'cart='+encodeURIComponent(JSON.stringify(data)); }
       return url.href;
     }
     function restoreCartLink() {
-      if (!location.hash.startsWith('#cart=')) return;
+      if (!/^#(?:cart|c|r)=/.test(location.hash)) return;
       try {
-        const data = JSON.parse(decodeURIComponent(location.hash.slice(6)));
+        let data;
+        if (location.hash.startsWith('#c=')) {
+          const products = location.hash.slice(3).split('-').map(pair => {
+            if (!/^[0-9a-z]+\.[0-9a-z]+$/.test(pair)) throw Error('Referencia inválida');
+            const [id, quantity] = pair.split('.').map(v=>parseInt(v,36));
+            const p = DEFAULT_PRODUCTS.find(x=>x.id===id);
+            if (!p) throw Error('Producto no encontrado');
+            return {...p, quantity};
+          });
+          data = {v:1, products, theme:originalTheme};
+        } else if (location.hash.startsWith('#r=')) {
+          const id = location.hash.slice(3);
+          if (!/^[a-f0-9]{18}$/.test(id)) throw Error('Referencia inválida o de ejemplo');
+          const raw = localStorage.getItem(cartKeyPrefix+id);
+          if (!raw) throw Error('Este carrito personalizado solo está disponible en el navegador original');
+          data = JSON.parse(raw);
+        } else { data = JSON.parse(decodeURIComponent(location.hash.slice(6))); }
         if (data.v !== 1 || !Array.isArray(data.products) || !data.products.length) throw Error('Carrito vacío o inválido');
         const restored = validateCatalog(data.products);
         const quantities = {};
@@ -722,16 +752,16 @@
         showToast('Carrito recuperado', 'green');
       } catch (err) { showToast('No se pudo recuperar el carrito: ' + err.message); }
     }
-    function buildPayload(eventName, extra, customerId, snapshot = cart) {
-      return {event_name:eventName,event_time:new Date().toISOString(),customer_id:customerId||'web_user',source:'web_store',user:{customer_id:customerId||'web_user'},...extra,cart_url:cartLink(snapshot)};
+    function buildPayload(eventName, extra, customerId, snapshot = cart, preview = false) {
+      return {event_name:eventName,event_time:new Date().toISOString(),customer_id:customerId||'web_user',source:'web_store',user:{customer_id:customerId||'web_user'},...extra,cart_url:cartLink(snapshot, preview)};
     }
     function selectPayload(tab){payloadTab=tab;renderPayloadPreview();}
     function renderPayloadPreview(){
       const customer=customerId||'5215512345678'; const p=PRODUCTS[0];
       let payload, note;
       if(payloadTab==='last'){payload=lastEvent?.payload;note=lastEvent?.status||'Todavía no se ha generado ningún evento.';}
-      else if(payloadTab==='addedToCart'){payload=buildPayload('addedToCart',{product_id:String(p.id),product_name:p.name,sku:p.sku,price:p.price,quantity:(cart[p.id]||0)+1,category:p.category},customer,{...cart,[p.id]:(cart[p.id]||0)+1});note='Ejemplo con el primer producto del catálogo activo. No envía ninguna solicitud.';}
-      else {const current=getCartTotals();const items=current.items.length?current.items:[{product_id:String(p.id),sku:p.sku,name:p.name,price:p.price,quantity:1,category:p.category}];payload=buildPayload('pagado',{order_total:items.reduce((n,x)=>n+x.price*x.quantity,0),items_count:items.reduce((n,x)=>n+x.quantity,0),items},customer,Object.fromEntries(items.map(i=>[i.product_id,i.quantity])));note=current.items.length?'Vista previa con el carrito actual.':'Ejemplo con un producto del catálogo activo.';}
+      else if(payloadTab==='addedToCart'){payload=buildPayload('addedToCart',{product_id:String(p.id),product_name:p.name,sku:p.sku,price:p.price,quantity:(cart[p.id]||0)+1,category:p.category,product_image_url:p.img},customer,{...cart,[p.id]:(cart[p.id]||0)+1},true);note='Ejemplo con el primer producto del catálogo activo. No envía ninguna solicitud.';}
+      else {const current=getCartTotals();const items=current.items.length?current.items:[{product_id:String(p.id),sku:p.sku,name:p.name,price:p.price,quantity:1,category:p.category,product_image_url:p.img}];payload=buildPayload('pagado',{order_total:items.reduce((n,x)=>n+x.price*x.quantity,0),items_count:items.reduce((n,x)=>n+x.quantity,0),items},customer,Object.fromEntries(items.map(i=>[i.product_id,i.quantity])),true);note=current.items.length?'Vista previa con el carrito actual.':'Ejemplo con un producto del catálogo activo.';}
       $('payloadCode').textContent=payload?JSON.stringify(payload,null,2):'Sin eventos todavía.';$('payloadInfo').textContent=note;
       for(const [id,key] of [['tabAdded','addedToCart'],['tabPaid','pagado'],['tabLast','last']])$(id).classList.toggle('active',payloadTab===key);
     }
@@ -751,6 +781,7 @@
     function openConfig() {
       $('cfgUrl').value = config.callbackUrl || '';
       $('cfgToken').value = config.authToken || '';
+      $('cfgPortable').checked = !!config.portableCart;
       $('cfgCustomer').textContent = customerId || 'Sin número capturado · ejemplos con número ficticio';
       $('configModal').classList.add('open');
       renderPayloadPreview();
@@ -763,7 +794,8 @@
     function saveConfig() {
       config = {
         callbackUrl: $('cfgUrl').value.trim(),
-        authToken: $('cfgToken').value.trim()
+        authToken: $('cfgToken').value.trim(),
+        portableCart: $('cfgPortable').checked
       };
       localStorage.setItem('gs_enviaflores_config', JSON.stringify(config));
       $('configBanner').style.display = config.callbackUrl ? 'none' : 'flex';
@@ -799,7 +831,7 @@
     function applyTheme(){for(const k of Object.keys(theme)) theme[k]=$('st'+k[0].toUpperCase()+k.slice(1)).value;paintTheme();status('Apariencia aplicada.');}
     function paintTheme(){const root=document.documentElement;root.style.setProperty('--rose',theme.color);root.style.setProperty('--accent-end',theme.accent);root.style.setProperty('--rose-soft',theme.color+'15');root.style.setProperty('--blush',theme.color+'09');root.style.setProperty('--border',theme.color+'33');root.style.setProperty('--bg',theme.color+'08');document.body.style.background="#f8f9fc";$('storeName').textContent=theme.name;$('storeLogo').textContent=theme.logo;$('heroTitle').textContent=theme.title;$('heroLabel').textContent=theme.label;document.title=theme.name;}
     function resetTheme(){theme={...originalTheme};paintTheme();openStudio();status('Apariencia restaurada.');}
-    function validateCatalog(data){if(!Array.isArray(data)||!data.length)throw Error('Se requiere un array no vacío.');const ids=new Set();return data.map((p,i)=>{const prefix='Producto '+(i+1)+': ';if(!p||typeof p!=='object')throw Error(prefix+'objeto inválido');if(!Number.isSafeInteger(p.id)||p.id<1||ids.has(p.id))throw Error(prefix+'id entero positivo y único requerido');ids.add(p.id);if(typeof p.price!=='number'||!Number.isFinite(p.price)||p.price<0)throw Error(prefix+'precio numérico no negativo requerido');for(const k of ['name','sku','img','category','tag'])if(typeof p[k]!=='string'||(!p[k].trim()&&k!=='tag'))throw Error(prefix+k+' debe ser texto');let url;try{url=new URL(p.img)}catch{throw Error(prefix+'URL de imagen inválida')}if(!['https:','http:'].includes(url.protocol))throw Error(prefix+'imagen debe usar HTTP(S)');return Object.fromEntries(fields.map(k=>[k,p[k]]));});}
+    function validateCatalog(data){if(!Array.isArray(data)||!data.length)throw Error('Se requiere un array no vacío.');const ids=new Set();return data.map((p,i)=>{const prefix='Producto '+(i+1)+': ';if(!p||typeof p!=='object')throw Error(prefix+'objeto inválido');if(!Number.isSafeInteger(p.id)||p.id<1||ids.has(p.id))throw Error(prefix+'id entero positivo y único requerido');ids.add(p.id);if(typeof p.price!=='number'||!Number.isFinite(p.price)||p.price<0)throw Error(prefix+'precio numérico no negativo requerido');for(const k of ['name','sku','img','category','tag'])if(typeof p[k]!=='string'||(!p[k].trim()&&k!=='tag'))throw Error(prefix+k+' debe ser texto');let url;try{url=new URL(p.img)}catch{throw Error(prefix+'URL de imagen inválida')}if(url.protocol!=='https:'||url.username||url.password)throw Error(prefix+'imagen debe ser una URL HTTPS pública sin credenciales');return Object.fromEntries(fields.map(k=>[k,p[k]]));});}
     function updateCatalogMeta(){$('productCount').textContent=PRODUCTS.length+' productos';$('catalogCount').textContent=PRODUCTS.length+' productos para demo';const cats=[...new Set(PRODUCTS.map(p=>p.category))].slice(0,3);$('giftStack').replaceChildren(...cats.map(cat=>{const el=document.createElement('div');el.className='gift-chip';el.textContent=cat+' · desde '+mxn(Math.min(...PRODUCTS.filter(p=>p.category===cat).map(p=>p.price)));return el;}));}
     function replaceCatalog(data){const checked=validateCatalog(data);PRODUCTS=checked;cart={};renderProducts();updateCatalogMeta();updateBadge();showShop();syncEditor();status('Catálogo aplicado: '+PRODUCTS.length+' productos. Carrito reiniciado.');}
     async function readCatalog(input){try{const file=input.files[0];if(!file)return;const raw=await file.text();$('catalogJson').value=raw;replaceCatalog(JSON.parse(raw));}catch(e){status(e.message)}finally{input.value='';}}
@@ -807,7 +839,7 @@
     function restoreCatalog(){replaceCatalog(DEFAULT_PRODUCTS.map(p=>({...p})));}
     function exportCatalog(){const url=URL.createObjectURL(new Blob([JSON.stringify(PRODUCTS,null,2)],{type:'application/json'}));const a=document.createElement('a');a.href=url;a.download='catalog.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);}
     function syncEditor(){$('catalogJson').value=JSON.stringify(PRODUCTS,null,2);const sel=$('productSelect');sel.replaceChildren(...PRODUCTS.map(p=>new Option(p.name+' · '+p.sku,String(p.id))));loadProduct();}
-    function drawFields(p){$('productFields').replaceChildren(...fields.map(k=>{const l=document.createElement('label');l.textContent=k;const input=document.createElement('input');input.className='f-input';input.id='edit_'+k;input.value=p[k]??'';if(k==='id'||k==='price'){input.type='number';input.step=k==='price'?'0.01':'1';}l.append(input);return l;}));}
+    function drawFields(p){$('productFields').replaceChildren(...fields.map(k=>{const l=document.createElement('label');l.textContent=k==='img'?'img — URL pública de imagen':k;const input=document.createElement('input');input.className='f-input';input.id='edit_'+k;input.value=p[k]??'';if(k==='img'){input.type='url';input.placeholder='https://cdn.example.com/product.jpg';}if(k==='id'||k==='price'){input.type='number';input.step=k==='price'?'0.01':'1';}l.append(input);return l;}));}
     function loadProduct(){drawFields(PRODUCTS.find(p=>String(p.id)===$('productSelect').value)||{});}
     function newProduct(){$('productSelect').selectedIndex=-1;drawFields({id:Math.max(0,...PRODUCTS.map(p=>p.id))+1,price:0});status('Completa los datos y guarda el nuevo producto.');}
     function saveProduct(){try{const p=Object.fromEntries(fields.map(k=>[k,['id','price'].includes(k)?Number($('edit_'+k).value):$('edit_'+k).value]));const old=$('productSelect').value;replaceCatalog(old?PRODUCTS.map(x=>String(x.id)===old?p:x):[...PRODUCTS,p]);}catch(e){status(e.message)}}
